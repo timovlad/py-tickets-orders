@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 
-
 class CinemaHall(models.Model):
     name = models.CharField(max_length=255)
     rows = models.IntegerField()
@@ -15,13 +14,11 @@ class CinemaHall(models.Model):
     def __str__(self):
         return self.name
 
-
 class Genre(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
-
 
 class Actor(models.Model):
     first_name = models.CharField(max_length=255)
@@ -33,7 +30,6 @@ class Actor(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
-
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
@@ -47,7 +43,6 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
-
 
 class MovieSession(models.Model):
     show_time = models.DateTimeField()
@@ -64,7 +59,6 @@ class MovieSession(models.Model):
     def taken_places(self):
         return self.tickets.values("row", "seat")
 
-
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
@@ -76,7 +70,6 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-
 
 class Ticket(models.Model):
     movie_session = models.ForeignKey(
@@ -90,23 +83,6 @@ class Ticket(models.Model):
 
     def clean(self):
         Ticket.validate_seat(self.row, self.movie_session.cinema_hall.rows, ValueError)
-
-        # for ticket_attr_value, ticket_attr_name, cinema_hall_attr_name in [
-        #     (self.row, "row", "rows"),
-        #     (self.seat, "seat", "seats_in_row"),
-        # ]:
-        #     count_attrs = getattr(
-        #         self.movie_session.cinema_hall, cinema_hall_attr_name
-        #     )
-        #     if not (1 <= ticket_attr_value <= count_attrs):
-        #         raise ValidationError(
-        #             {
-        #                 ticket_attr_name: f"{ticket_attr_name} "
-        #                 f"number must be in available range: "
-        #                 f"(1, {cinema_hall_attr_name}): "
-        #                 f"(1, {count_attrs})"
-        #             }
-        #         )
 
     def save(
         self,
@@ -134,4 +110,3 @@ class Ticket(models.Model):
             raise error_to_raise({
                 "rows": f"rows must be in available range [1, {cinema_hall.rows}, not {rows}] ",
             })
-
