@@ -17,17 +17,21 @@ from cinema.serializers import (
     OrderSerializer,
 )
 
+
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+
 
 class ActorViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
 
+
 class CinemaHallViewSet(viewsets.ModelViewSet):
     queryset = CinemaHall.objects.all()
     serializer_class = CinemaHallSerializer
+
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
@@ -41,12 +45,14 @@ class MovieViewSet(viewsets.ModelViewSet):
 
         if actors:
             actors_names = actors.split(",")
-            actors_ids = Actor.objects.filter(full_name__in=actors_names).values_list("id", flat=True)
+            actors_ids = Actor.objects.filter(
+                full_name__in=actors_names).values_list("id", flat=True)
             queryset = queryset.filter(actors__in=actors_ids).distinct()
 
         if genres:
             genres_names = genres.split(",")
-            genres_ids = Genre.objects.filter(name__in=genres_names).values_list("id", flat=True)
+            genres_ids = Genre.objects.filter(
+                name__in=genres_names).values_list("id", flat=True)
             queryset = queryset.filter(genres__in=genres_ids).distinct()
 
         if title:
@@ -61,6 +67,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             return MovieDetailSerializer
         return MovieSerializer
 
+
 class MovieSessionViewSet(viewsets.ModelViewSet):
     queryset = MovieSession.objects.all()
     serializer_class = MovieSessionSerializer
@@ -70,7 +77,9 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
         queryset = (
             queryset
             .select_related("cinema_hall")
-            .annotate(tickets_available=(F("cinema_hall__rows") * F("cinema_hall__seats_in_row") - Count("tickets")))
+            .annotate(tickets_available=(
+                F("cinema_hall__rows")
+                * F("cinema_hall__seats_in_row") - Count("tickets")))
         )
         date = self.request.query_params.get("date")
         movie_id = self.request.query_params.get("movie")
@@ -90,10 +99,12 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
             return MovieSessionDetailSerializer
         return MovieSessionSerializer
 
+
 class OrderSetPagination(PageNumberPagination):
     page_size = 2
     page_size_query_param = "page_size"
     max_page_size = 2
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
