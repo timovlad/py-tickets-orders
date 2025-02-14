@@ -90,7 +90,7 @@ class Ticket(models.Model):
 
     def clean(self):
         Ticket.validate_seat(
-            self.row, self.movie_session.cinema_hall.rows, ValueError)
+            self.row, self.movie_session.cinema_hall.seats_in_row, ValueError)
 
     def save(
         self,
@@ -114,7 +114,7 @@ class Ticket(models.Model):
 
     @staticmethod
     def validate_seat(rows, cinema_hall, error_to_raise):
-        if not (1 <= rows <= cinema_hall.rows):
+        if not (1 <= rows <= cinema_hall.seats_in_row):
             raise error_to_raise({
                 "rows":
                     f"rows must be in available range"
